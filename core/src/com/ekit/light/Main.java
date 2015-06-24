@@ -37,15 +37,15 @@ import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
 
 public class Main extends InputAdapter implements ApplicationListener {
-
+	
 	static final int RAYS_PER_BALL = 128;
 	static final int BALLSNUM = 5;
 	static final float LIGHT_DISTANCE = 16f;
 	static final float RADIUS = 1f;
-
+	
 	static final float viewportWidth = 48;
 	static final float viewportHeight = 32;
-
+	
 	OrthographicCamera camera;
 
 	SpriteBatch batch;
@@ -70,43 +70,43 @@ public class Main extends InputAdapter implements ApplicationListener {
 
 	/** pixel perfect projection for font rendering */
 	Matrix4 normalProjection = new Matrix4();
-
+	
 	boolean showText = true;
-
+	
 	/** BOX2D LIGHT STUFF */
 	RayHandler rayHandler;
-
+	
 	ArrayList<Light> lights = new ArrayList<Light>(BALLSNUM);
-
+	
 	float sunDirection = -90f;
-
+	
 	@Override
 	public void create() {
-
+		
 		MathUtils.random.setSeed(Long.MIN_VALUE);
 
 		camera = new OrthographicCamera(viewportWidth, viewportHeight);
 		camera.position.set(0, viewportHeight / 2f, 0);
 		camera.update();
-
+		
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		font.setColor(Color.RED);
-
+		
 		textureRegion = new TextureRegion(new Texture(
-				Gdx.files.internal("wheel.png")));
-		bg = new Texture(Gdx.files.internal("road.jpg"));
+				Gdx.files.internal("marble.png")));
+		bg = new Texture(Gdx.files.internal("bg.png"));
 
 		createPhysicsWorld();
 		Gdx.input.setInputProcessor(this);
 
-		normalProjection.setToOrtho2D(0, 0, Gdx.graphics.getWidth(),
-				Gdx.graphics.getHeight());
+		normalProjection.setToOrtho2D(
+				0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		/** BOX2D LIGHT STUFF BEGIN */
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
-
+		
 		rayHandler = new RayHandler(world);
 		rayHandler.setAmbientLight(0f, 0f, 0f, 0.5f);
 		rayHandler.setBlurNum(3);
@@ -118,7 +118,7 @@ public class Main extends InputAdapter implements ApplicationListener {
 
 	@Override
 	public void render() {
-
+		
 		/** Rotate directional light like sun :) */
 		if (lightsType == 3) {
 			sunDirection += Gdx.graphics.getDeltaTime() * 4f;
@@ -135,16 +135,19 @@ public class Main extends InputAdapter implements ApplicationListener {
 		batch.disableBlending();
 		batch.begin();
 		{
-			batch.draw(bg, -viewportWidth / 2f, 0, viewportWidth,
-					viewportHeight);
+			batch.draw(bg, -viewportWidth / 2f, 0, viewportWidth, viewportHeight);
 			batch.enableBlending();
 			for (int i = 0; i < BALLSNUM; i++) {
 				Body ball = balls.get(i);
 				Vector2 position = ball.getPosition();
 				float angle = MathUtils.radiansToDegrees * ball.getAngle();
-				batch.draw(textureRegion, position.x - RADIUS, position.y
-						- RADIUS, RADIUS, RADIUS, RADIUS * 2, RADIUS * 2, 1f,
-						1f, angle);
+				batch.draw(
+						textureRegion,
+						position.x - RADIUS, position.y - RADIUS,
+						RADIUS, RADIUS,
+						RADIUS * 2, RADIUS * 2,
+						1f, 1f,
+						angle);
 			}
 		}
 		batch.end();
@@ -152,51 +155,63 @@ public class Main extends InputAdapter implements ApplicationListener {
 		/** BOX2D LIGHT STUFF BEGIN */
 		rayHandler.setCombinedMatrix(camera);
 
-		if (stepped)
-			rayHandler.update();
+		if (stepped) rayHandler.update();
 		rayHandler.render();
 		/** BOX2D LIGHT STUFF END */
 
 		long time = System.nanoTime();
 
-		boolean atShadow = rayHandler.pointAtShadow(testPoint.x, testPoint.y);
+		boolean atShadow = rayHandler.pointAtShadow(testPoint.x,
+				testPoint.y);
 		aika += System.nanoTime() - time;
-
+      
 		/** FONT */
 		if (showText) {
 			batch.setProjectionMatrix(normalProjection);
 			batch.begin();
-
-			font.draw(batch, "F1 - PointLight", 0, Gdx.graphics.getHeight());
-			font.draw(batch, "F2 - ConeLight", 0, Gdx.graphics.getHeight() - 15);
-			font.draw(batch, "F3 - ChainLight", 0,
-					Gdx.graphics.getHeight() - 30);
-			font.draw(batch, "F4 - DirectionalLight", 0,
-					Gdx.graphics.getHeight() - 45);
-			font.draw(batch, "F5 - random lights colors", 0,
-					Gdx.graphics.getHeight() - 75);
-			font.draw(batch, "F6 - random lights distance", 0,
-					Gdx.graphics.getHeight() - 90);
-			font.draw(batch, "F9 - default blending (1.3)", 0,
-					Gdx.graphics.getHeight() - 120);
-			font.draw(batch, "F10 - over-burn blending (default in 1.2)", 0,
-					Gdx.graphics.getHeight() - 135);
-			font.draw(batch, "F11 - some other blending", 0,
-					Gdx.graphics.getHeight() - 150);
-
-			font.draw(batch, "F12 - toggle help text", 0,
-					Gdx.graphics.getHeight() - 180);
-
+			
+			font.draw(batch,
+					"F1 - PointLight",
+					0, Gdx.graphics.getHeight());
+			font.draw(batch,
+					"F2 - ConeLight",
+					0, Gdx.graphics.getHeight() - 15);
+			font.draw(batch,
+					"F3 - ChainLight",
+					0, Gdx.graphics.getHeight() - 30);
+			font.draw(batch,
+					"F4 - DirectionalLight",
+					0, Gdx.graphics.getHeight() - 45);
+			font.draw(batch,
+					"F5 - random lights colors",
+					0, Gdx.graphics.getHeight() - 75);
+			font.draw(batch,
+					"F6 - random lights distance",
+					0, Gdx.graphics.getHeight() - 90);
+			font.draw(batch,
+					"F9 - default blending (1.3)",
+					0, Gdx.graphics.getHeight() - 120);
+			font.draw(batch,
+					"F10 - over-burn blending (default in 1.2)",
+					0, Gdx.graphics.getHeight() - 135);
+			font.draw(batch,
+					"F11 - some other blending",
+					0, Gdx.graphics.getHeight() - 150);
+			
+			font.draw(batch,
+					"F12 - toggle help text",
+					0, Gdx.graphics.getHeight() - 180);
+	
 			font.draw(batch,
 					Integer.toString(Gdx.graphics.getFramesPerSecond())
-							+ "mouse at shadows: " + atShadow
-							+ " time used for shadow calculation:" + aika
-							/ ++times + "ns", 0, 20);
-
+					+ "mouse at shadows: " + atShadow
+					+ " time used for shadow calculation:"
+					+ aika / ++times + "ns" , 0, 20);
+	
 			batch.end();
 		}
 	}
-
+	
 	void clearLights() {
 		if (lights.size() > 0) {
 			for (Light light : lights) {
@@ -206,55 +221,69 @@ public class Main extends InputAdapter implements ApplicationListener {
 		}
 		groundBody.setActive(true);
 	}
-
+	
 	void initPointLights() {
 		clearLights();
 		for (int i = 0; i < BALLSNUM; i++) {
-			PointLight light = new PointLight(rayHandler, RAYS_PER_BALL, null,
-					LIGHT_DISTANCE, 0f, 0f);
+			PointLight light = new PointLight(
+					rayHandler, RAYS_PER_BALL, null, LIGHT_DISTANCE, 0f, 0f);
 			light.attachToBody(balls.get(i), RADIUS / 2f, RADIUS / 2f);
-			light.setColor(MathUtils.random(), MathUtils.random(),
-					MathUtils.random(), 1f);
+			light.setColor(
+					MathUtils.random(),
+					MathUtils.random(),
+					MathUtils.random(),
+					1f);
 			lights.add(light);
 		}
 	}
-
+	
 	void initConeLights() {
 		clearLights();
 		for (int i = 0; i < BALLSNUM; i++) {
-			ConeLight light = new ConeLight(rayHandler, RAYS_PER_BALL, null,
-					LIGHT_DISTANCE, 0, 0, 0f, MathUtils.random(15f, 40f));
-			light.attachToBody(balls.get(i), RADIUS / 2f, RADIUS / 2f,
-					MathUtils.random(0f, 360f));
-			light.setColor(MathUtils.random(), MathUtils.random(),
-					MathUtils.random(), 1f);
+			ConeLight light = new ConeLight(
+					rayHandler, RAYS_PER_BALL, null, LIGHT_DISTANCE,
+					0, 0, 0f, MathUtils.random(15f, 40f));
+			light.attachToBody(
+					balls.get(i),
+					RADIUS / 2f, RADIUS / 2f, MathUtils.random(0f, 360f));
+			light.setColor(
+					MathUtils.random(),
+					MathUtils.random(),
+					MathUtils.random(),
+					1f);
 			lights.add(light);
 		}
 	}
-
+	
 	void initChainLights() {
 		clearLights();
 		for (int i = 0; i < BALLSNUM; i++) {
-			ChainLight light = new ChainLight(rayHandler, RAYS_PER_BALL, null,
-					LIGHT_DISTANCE, 1, new float[] { -5, 0, 0, 3, 5, 0 });
-			light.attachToBody(balls.get(i), MathUtils.random(0f, 360f));
-			light.setColor(MathUtils.random(), MathUtils.random(),
-					MathUtils.random(), 1f);
+			ChainLight light = new ChainLight(
+					rayHandler, RAYS_PER_BALL, null, LIGHT_DISTANCE, 1,
+					new float[]{-5, 0, 0, 3, 5, 0});
+			light.attachToBody(
+					balls.get(i),
+					MathUtils.random(0f, 360f));
+			light.setColor(
+					MathUtils.random(),
+					MathUtils.random(),
+					MathUtils.random(),
+					1f);
 			lights.add(light);
 		}
 	}
-
+	
 	void initDirectionalLight() {
 		clearLights();
-
+		
 		groundBody.setActive(false);
 		sunDirection = MathUtils.random(0f, 360f);
-
-		DirectionalLight light = new DirectionalLight(rayHandler,
-				4 * RAYS_PER_BALL, null, sunDirection);
+		
+		DirectionalLight light = new DirectionalLight(
+				rayHandler, 4 * RAYS_PER_BALL, null, sunDirection);
 		lights.add(light);
 	}
-
+	
 	private final static int MAX_FPS = 30;
 	private final static int MIN_FPS = 15;
 	public final static float TIME_STEP = 1f / MAX_FPS;
@@ -284,10 +313,11 @@ public class Main extends InputAdapter implements ApplicationListener {
 	private void createPhysicsWorld() {
 
 		world = new World(new Vector2(0, 0), true);
-
+		
 		float halfWidth = viewportWidth / 2f;
 		ChainShape chainShape = new ChainShape();
-		chainShape.createLoop(new Vector2[] { new Vector2(-halfWidth, 0f),
+		chainShape.createLoop(new Vector2[] {
+				new Vector2(-halfWidth, 0f),
 				new Vector2(halfWidth, 0f),
 				new Vector2(halfWidth, viewportHeight),
 				new Vector2(-halfWidth, viewportHeight) });
@@ -376,8 +406,8 @@ public class Main extends InputAdapter implements ApplicationListener {
 
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) {
-		camera.unproject(testPoint.set(x, y, 0));
-		target.set(testPoint.x, testPoint.y);
+    camera.unproject(testPoint.set(x, y, 0));
+    target.set(testPoint.x, testPoint.y);
 		// if a mouse joint exists we simply update
 		// the target of the joint based on the new
 		// mouse coordinates
@@ -404,76 +434,82 @@ public class Main extends InputAdapter implements ApplicationListener {
 	}
 
 	/**
-	 * Type of lights to use: 0 - PointLight 1 - ConeLight 2 - ChainLight 3 -
-	 * DirectionalLight
+	 * Type of lights to use:
+	 * 0 - PointLight
+	 * 1 - ConeLight
+	 * 2 - ChainLight
+	 * 3 - DirectionalLight
 	 */
 	int lightsType = 0;
-
+	
 	@Override
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
-
+		
 		case Input.Keys.F1:
 			if (lightsType != 0) {
 				initPointLights();
 				lightsType = 0;
 			}
 			return true;
-
+			
 		case Input.Keys.F2:
 			if (lightsType != 1) {
 				initConeLights();
 				lightsType = 1;
 			}
 			return true;
-
+			
 		case Input.Keys.F3:
 			if (lightsType != 2) {
 				initChainLights();
 				lightsType = 2;
 			}
 			return true;
-
+			
 		case Input.Keys.F4:
 			if (lightsType != 3) {
 				initDirectionalLight();
 				lightsType = 3;
 			}
 			return true;
-
+			
 		case Input.Keys.F5:
 			for (Light light : lights)
-				light.setColor(MathUtils.random(), MathUtils.random(),
-						MathUtils.random(), 1f);
+				light.setColor(
+						MathUtils.random(),
+						MathUtils.random(),
+						MathUtils.random(),
+						1f);
 			return true;
-
+			
 		case Input.Keys.F6:
 			for (Light light : lights)
-				light.setDistance(MathUtils.random(LIGHT_DISTANCE * 0.5f,
-						LIGHT_DISTANCE * 2f));
+				light.setDistance(MathUtils.random(
+						LIGHT_DISTANCE * 0.5f, LIGHT_DISTANCE * 2f));
 			return true;
-
+			
 		case Input.Keys.F9:
 			rayHandler.diffuseBlendFunc.reset();
 			return true;
-
+			
 		case Input.Keys.F10:
-			rayHandler.diffuseBlendFunc.set(GL20.GL_DST_COLOR,
-					GL20.GL_SRC_COLOR);
+			rayHandler.diffuseBlendFunc.set(
+					GL20.GL_DST_COLOR, GL20.GL_SRC_COLOR);
 			return true;
-
+			
 		case Input.Keys.F11:
-			rayHandler.diffuseBlendFunc.set(GL20.GL_SRC_COLOR,
-					GL20.GL_DST_COLOR);
+			rayHandler.diffuseBlendFunc.set(
+					GL20.GL_SRC_COLOR, GL20.GL_DST_COLOR);
 			return true;
-
+			
 		case Input.Keys.F12:
 			showText = !showText;
 			return true;
-
+			
 		default:
 			return false;
-
+			
 		}
 	}
 
@@ -501,5 +537,5 @@ public class Main extends InputAdapter implements ApplicationListener {
 	@Override
 	public void resume() {
 	}
-
+	
 }
